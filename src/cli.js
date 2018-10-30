@@ -68,7 +68,8 @@ async function main() {
     ]);
   }
 
-  const appName = values.appname;
+  const appName = values.appName;
+  const deploymentName = values.deploymentName;
   const imageRepoUrl = values.deploy.image.repo;
 
   const namespace = answers3.namespace;
@@ -88,7 +89,7 @@ async function main() {
 
   if (answers2.tasks.includes('deploy')) {
     console.log(colors.green('Deploying in ..'));
-    deployInKubernetes(appName, chartLocation, namespace, imageTag);
+    deployInKubernetes(deploymentName, chartLocation, namespace, imageTag);
   }
 }
 
