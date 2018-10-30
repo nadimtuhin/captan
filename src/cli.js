@@ -4,9 +4,16 @@ const inquirer = require('inquirer');
 const colors = require('colors');
 const argv = require('yargs').argv;
 
-const { exec } = require('./utils/shell');
-const { getHelmCharts, readValuesFile } = require('./utils/kubernetes');
+const {
+  getHelmCharts,
+  readValuesFile
+} = require('./utils/kubernetes');
 
+const {
+  buildDockerImage,
+  pushDockerImageInHarbor,
+  deployInKubernetes
+} = require('./commands');
 
 async function main() {
   const answers1 = await inquirer.prompt([{
@@ -61,32 +68,26 @@ async function main() {
     ]);
   }
 
-  const tag = answers5.tag;
+  const appName = values.appname;
   const namespace = answers3.namespace;
   const env = answers4.env;
+  const imageTag = answers5.tag;
 
-  const imageUrl = values.deploy.image.repo;
-  const remoteImage = `${imageUrl}:${tag}`;
-  const localImage = `${values.appname}/${env}:live`;
+  const localImageName = `${appName}/${env}:live`;
+  const imageRepoUrl = values.deploy.image.repo;
+  const remoteImageUrl = `${imageRepoUrl}:${tag}`;
 
   if (answers2.tasks.includes('build-image')) {
-    console.log(colors.green(`Building docker image ${localImage} ..`));
-    exec(`docker build . --build-arg NODE_ENV=${env} -t ${localImage}`);
+    console.log(colors.green(`Building docker image ${localImageName} ..`));
+    buildDockerImage(localImageName, env);
 
-    console.log(colors.green(`Pushing docker image ${remoteImage}..`));
-    exec(`docker tag ${localImage} ${remoteImage}`);
-    exec(`docker push ${remoteImage}`);
+    console.log(colors.green(`Pushing docker image ${remoteImageUrl}..`));
+    pushDockerImageInHarbor(localImage, remoteImageUrl);
   }
 
   if (answers2.tasks.includes('deploy')) {
     console.log(colors.green('Deploying in ..'));
-    exec(
-      `helm upgrade` +
-      ` --install ${values.appname} ` +
-      chartLocation +
-      ` --namespace ${namespace} ` +
-      ` --set deploy.image.tag=${tag} `
-    );
+    deployInKubernetes(appName, chartLocation, namespace, imageTag);
   }
 }
 
