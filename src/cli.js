@@ -69,6 +69,7 @@ async function main() {
   }
 
   const appName = values.appName;
+  const dockerFile = values.dockerFile;
   const deploymentName = values.deploymentName;
   const imageRepoUrl = values.deploy.image.repo;
 
@@ -81,10 +82,10 @@ async function main() {
 
   if (answers2.tasks.includes('build-image')) {
     console.log(colors.green(`Building docker image ${localImageName} ..`));
-    buildDockerImage(localImageName, env);
+    buildDockerImage(dockerFile, localImageName, env);
 
     console.log(colors.green(`Pushing docker image ${remoteImageUrl} ..`));
-    pushDockerImageInHarbor(localImage, remoteImageUrl);
+    pushDockerImageInHarbor(localImageName, remoteImageUrl);
   }
 
   if (answers2.tasks.includes('deploy')) {
