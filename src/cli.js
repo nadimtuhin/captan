@@ -75,7 +75,7 @@ async function main() {
 
   const namespace = answers3.namespace;
   const env = answers4.env;
-  const imageTag = answers5.tag;
+  const imageTag = `${answers5.tag}-${env}`;
 
   const localImageName = `${appName}/${env}:live`;
   const remoteImageUrl = `${imageRepoUrl}:${imageTag}`;
