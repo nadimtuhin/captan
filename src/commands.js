@@ -1,7 +1,7 @@
 const { exec } = require('./utils/shell');
 
-function buildDockerImage(localImageName, environment) {
-  exec(`docker build . --build-arg NODE_ENV=${environment} -t ${localImageName}`);
+function buildDockerImage(dockerFile, localImageName, environment) {
+  exec(`docker build . -f ${dockerFile} --build-arg NODE_ENV=${environment} -t ${localImageName}`);
 }
 
 function pushDockerImageInHarbor(localImageName, remoteImageUrl) {
@@ -11,7 +11,7 @@ function pushDockerImageInHarbor(localImageName, remoteImageUrl) {
 
 function deployInKubernetes(appName, chartLocation, namespace, imageTag) {
   exec(
-    `helm upgrade` +
+    'helm upgrade' +
     ` --install ${appName} ` +
     chartLocation +
     ` --namespace ${namespace} ` +
