@@ -7,7 +7,7 @@ const argv = require('yargs').argv;
 const {
   getHelmCharts,
   readValuesFile
-} = require('./utils/kubernetes');
+} = require('./utils/helm');
 
 const {
   buildDockerImage,
