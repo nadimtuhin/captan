@@ -1,7 +1,9 @@
 #!/usr/bin/env node --harmony
+
 const colors = require('colors');
 const argv = require('yargs').argv;
 
+const { getContexts } = require('./utils/kubernetes');
 const {
   getHelmCharts,
   readValuesFile
@@ -9,11 +11,13 @@ const {
 const {
   buildDockerImage,
   pushDockerImageInHarbor,
-  deployInKubernetes
+  deployInKubernetes,
+  switchContext
 } = require('./commands');
 const {
   getBuildEnvironment,
   getHelmChartLocation,
+  selectKubernetesContext,
   getNamespace,
   getDeployment,
   getRemoteImageTag,
@@ -26,8 +30,9 @@ async function main() {
 
   const values = readValuesFile(chartLocation);
 
-  let namespace, deployment;
+  let namespace, deployment, context;
   if (tasks.includes('deploy')) {
+    context = await selectKubernetesContext(getContexts().map(c => c.name));
     namespace = await getNamespace(values.namespaces);
     deployment = await getDeployment(values.deployments);
   }
@@ -61,6 +66,7 @@ async function main() {
 
   if (tasks.includes('deploy')) {
     console.log(colors.green('Deploying in ..'));
+    switchContext(context);
     deployInKubernetes(deployment, chartLocation, namespace, imageTag);
   }
 }

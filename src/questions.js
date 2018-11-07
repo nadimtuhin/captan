@@ -16,11 +16,11 @@ async function getTasks() {
   });
 }
 
-async function getDeployment(deployments) {
+async function selectKubernetesContext(contexts) {
   return await ask({
     type: 'list',
-    message: 'Select your deployment?',
-    choices: deployments //FIXME: validate
+    message: 'Select a context',
+    choices: contexts //FIXME: validate
   });
 }
 
@@ -29,6 +29,14 @@ async function getNamespace(namespaces) {
     type: 'list',
     message: 'Which namespace do you want to deploy?',
     choices: namespaces //FIXME: validate
+  });
+}
+
+async function getDeployment(deployments) {
+  return await ask({
+    type: 'list',
+    message: 'Select your deployment?',
+    choices: deployments //FIXME: validate
   });
 }
 
@@ -50,6 +58,7 @@ async function getRemoteImageTag() {
 module.exports = {
   getHelmChartLocation,
   getTasks,
+  selectKubernetesContext,
   getNamespace,
   getDeployment,
   getBuildEnvironment,
