@@ -1,30 +1,35 @@
-const fs = require('fs');
-const colors = require('colors');
-const yaml = require('js-yaml');
+const k8s = require('@kubernetes/client-node');
 
-const { getDirectories } = require('./fs');
+const kc = new k8s.KubeConfig();
+kc.loadFromDefault();
 
-function getHelmCharts() {
-  try {
-    return getDirectories('hack');
-  } catch (e) {
-    console.log(colors.red('no hack/helmcharts found'));
-    process.exit(1);
-  }
+const k8sApi = kc.makeApiClient(k8s.Core_v1Api);
+
+
+function getContexts(kc) {
+  return kc.getContexts();
 }
 
-function readValuesFile(chartLocation) {
-  const chartValuesFile = `${chartLocation}/values.yaml`;
+function getCurrentContextObject(kc) {
+  return kc.getCurrentContextObject();
+}
 
-  try {
-    return yaml.safeLoad(fs.readFileSync(chartValuesFile, 'utf8'));
-  } catch (e) {
-    console.log(`Failed to find/parse chart file ${chartValuesFile}`);
-    process.exit(1);
-  }
+function getNamespaces(kc) {
+  return k8sApi.listNamespace()
+    .then((res, err) => {
+      if (err) throw Error(err);
+      const namespaces = res.body.items;
+      return namespaces.map(n => n.metadata.name);
+    });
 }
 
 module.exports = {
-  getHelmCharts,
-  readValuesFile
+  getContexts,
+  getCurrentContextObject,
+  getNamespaces
 };
+
+// context = {cluster, name, user}
+// console.log(getClusterNames(kc));
+// console.log(getCurrentContextObject(kc));
+// getNamespaces(kc).then(n => console.log(n));
