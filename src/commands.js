@@ -26,5 +26,6 @@ function deployInKubernetes(appName, chartLocation, namespace, imageTag) {
 module.exports = {
   buildDockerImage,
   pushDockerImageInHarbor,
-  deployInKubernetes
+  deployInKubernetes,
+  switchContext
 };

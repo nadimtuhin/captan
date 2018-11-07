@@ -6,15 +6,15 @@ kc.loadFromDefault();
 const k8sApi = kc.makeApiClient(k8s.Core_v1Api);
 
 
-function getContexts(kc) {
+function getContexts() {
   return kc.getContexts();
 }
 
-function getCurrentContextObject(kc) {
+function getCurrentContextObject() {
   return kc.getCurrentContextObject();
 }
 
-function getNamespaces(kc) {
+function getNamespaces() {
   return k8sApi.listNamespace()
     .then((res, err) => {
       if (err) throw Error(err);
@@ -30,6 +30,7 @@ module.exports = {
 };
 
 // context = {cluster, name, user}
+// console.log(getContexts());
 // console.log(getClusterNames(kc));
 // console.log(getCurrentContextObject(kc));
 // getNamespaces(kc).then(n => console.log(n));
