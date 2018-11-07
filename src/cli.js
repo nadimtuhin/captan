@@ -3,7 +3,7 @@
 const colors = require('colors');
 const argv = require('yargs').argv;
 
-const { getContexts } = require('./utils/kubernetes');
+const { getContexts, getNamespaces } = require('./utils/kubernetes');
 const {
   getHelmCharts,
   readValuesFile
@@ -24,16 +24,35 @@ const {
   getTasks
 } = require('./questions');
 
+function getValues(chartLocation) {
+  const defaultValues = {
+    environments: [],
+    deployments: [],
+    namespaces: [],
+    contexts: getContexts().map(c => c.name)
+  };
+
+  const values = readValuesFile(chartLocation);
+
+  return Object.assign({}, defaultValues, values);
+}
+
 async function main() {
   const chartLocation = await getHelmChartLocation(getHelmCharts());
   const tasks = await getTasks();
 
-  const values = readValuesFile(chartLocation);
+  const values = getValues(chartLocation);
 
-  let namespace, deployment, context;
+  let namespaces, namespace, deployment, context;
   if (tasks.includes('deploy')) {
-    context = await selectKubernetesContext(getContexts().map(c => c.name));
-    namespace = await getNamespace(values.namespaces);
+    try {
+      namespaces = await getNamespaces();
+    } catch (e) {
+      namespaces = [];
+    }
+
+    context = await selectKubernetesContext(values.contexts);
+    namespace = await getNamespace(values.namespaces.concat(namespaces));
     deployment = await getDeployment(values.deployments);
   }
 
@@ -65,8 +84,10 @@ async function main() {
   }
 
   if (tasks.includes('deploy')) {
-    console.log(colors.green('Deploying in ..'));
+    console.log(colors.green(`Switching to ${context} context`));
     switchContext(context);
+
+    console.log(colors.green('Deploying in ..'));
     deployInKubernetes(deployment, chartLocation, namespace, imageTag);
   }
 }
