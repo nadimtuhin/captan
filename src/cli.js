@@ -45,13 +45,16 @@ async function main() {
 
   let namespaces, namespace, deployment, context;
   if (tasks.includes('deploy')) {
+    context = await selectKubernetesContext(values.contexts);
+    console.log(colors.green(`Switching to ${context} context`));
+    switchContext(context);
+
     try {
       namespaces = await getNamespaces();
     } catch (e) {
       namespaces = [];
     }
 
-    context = await selectKubernetesContext(values.contexts);
     namespace = await getNamespace(values.namespaces.concat(namespaces));
     deployment = await getDeployment(values.deployments);
   }
@@ -84,9 +87,6 @@ async function main() {
   }
 
   if (tasks.includes('deploy')) {
-    console.log(colors.green(`Switching to ${context} context`));
-    switchContext(context);
-
     console.log(colors.green('Deploying in ..'));
     deployInKubernetes(deployment, chartLocation, namespace, imageTag);
   }
