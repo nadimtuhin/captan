@@ -47,7 +47,6 @@ async function getRemoteImageTag() {
   });
 }
 
-
 module.exports = {
   getHelmChartLocation,
   getTasks,
