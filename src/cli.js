@@ -1,6 +1,4 @@
 #!/usr/bin/env node --harmony
-
-const inquirer = require('inquirer');
 const colors = require('colors');
 const argv = require('yargs').argv;
 
@@ -8,64 +6,38 @@ const {
   getHelmCharts,
   readValuesFile
 } = require('./utils/helm');
-
 const {
   buildDockerImage,
   pushDockerImageInHarbor,
   deployInKubernetes
 } = require('./commands');
+const {
+  getBuildEnvironment,
+  getHelmChartLocation,
+  getNamespace,
+  getRemoteImageTag,
+  getTasks
+} = require('./questions');
 
 async function main() {
-  const answers1 = await inquirer.prompt([{
-    type: 'list',
-    name: 'chart',
-    message: 'Choose helm chart location',
-    choices: getHelmCharts()
-  }]);
+  const chartLocation = await getHelmChartLocation(getHelmCharts());
+  const tasks = await getTasks();
 
-  const chartLocation = answers1.chart;
   const values = readValuesFile(chartLocation);
 
-  const answers2 = await inquirer.prompt([{
-    type: 'checkbox',
-    name: 'tasks',
-    message: 'What do you want to do',
-    choices: [{ name: 'build-image' }, { name: 'deploy' }]
-  }]);
-
-  let answers3 = {};
-  if (answers2.tasks.includes('deploy')) {
-    answers3 = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'namespace',
-        message: 'Where do you want to deploy?',
-        choices: values.namespaces //FIXME: validate
-      },
-    ]);
+  let namespace;
+  if (tasks.includes('deploy')) {
+    namespace = await getNamespace(values);
   }
 
-  let answers4 = {};
-  if (answers2.tasks.includes('build-image')) {
-    answers4 = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'env',
-        message: 'What is the environment?',
-        choices: values.environments //FIXME: validate
-      }
-    ])
+  let environment;
+  if (tasks.includes('build-image')) {
+    environment = await getBuildEnvironment(values);
   }
 
-  let answers5 = {};
-  if (answers2.tasks.length) {
-    answers5 = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'tag',
-        message: 'Tag your release?'
-      }
-    ]);
+  let tag;
+  if (tasks.length) {
+    tag = await getRemoteImageTag();
   }
 
   const appName = values.appName;
@@ -73,22 +45,20 @@ async function main() {
   const deploymentName = values.deploymentName;
   const imageRepoUrl = values.deploy.image.repo;
 
-  const namespace = answers3.namespace;
-  const env = answers4.env;
-  const imageTag = `${answers5.tag}-${env}`;
+  const imageTag = `${tag}-${environment}`;
 
-  const localImageName = `${appName}/${env}:live`;
+  const localImageName = `${appName}/${environment}:live`;
   const remoteImageUrl = `${imageRepoUrl}:${imageTag}`;
 
-  if (answers2.tasks.includes('build-image')) {
+  if (tasks.includes('build-image')) {
     console.log(colors.green(`Building docker image ${localImageName} ..`));
-    buildDockerImage(dockerFile, localImageName, env);
+    buildDockerImage(dockerFile, localImageName, environment);
 
     console.log(colors.green(`Pushing docker image ${remoteImageUrl} ..`));
     pushDockerImageInHarbor(localImageName, remoteImageUrl);
   }
 
-  if (answers2.tasks.includes('deploy')) {
+  if (tasks.includes('deploy')) {
     console.log(colors.green('Deploying in ..'));
     deployInKubernetes(deploymentName, chartLocation, namespace, imageTag);
   }
