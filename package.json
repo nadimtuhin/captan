@@ -1,6 +1,6 @@
 {
   "name": "captan",
-  "version": "0.1.1",
+  "version": "0.2",
   "description": "kubernetes deployment helper",
   "main": "index.js",
   "repository": "git@github.com:nadimtuhin/captan.git",
