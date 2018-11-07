@@ -1,5 +1,9 @@
 const { exec } = require('./utils/shell');
 
+function switchContext(context) {
+  exec(`kubectl config use-context ${context}`);
+}
+
 function buildDockerImage(dockerFile, localImageName, environment) {
   exec(`docker build . -f ${dockerFile} --build-arg NODE_ENV=${environment} -t ${localImageName}`);
 }
