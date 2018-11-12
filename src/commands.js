@@ -1,3 +1,4 @@
+const confirmDeploy = require('./questions').confirmDeploy;
 const { exec } = require('./utils/shell');
 
 function switchContext(context) {
@@ -13,20 +14,18 @@ function pushDockerImageInHarbor(localImageName, remoteImageUrl) {
   exec(`docker push ${remoteImageUrl}`);
 }
 
-function deployInKubernetes({ context, deployment, chartLocation, namespace, imageTag }) {
-  exec(
-    'helm upgrade' +
+function getKubernetesDeploymentCommand({ context, deployment, chartLocation, namespace, imageTag }) {
+  return 'helm upgrade' +
     ` --kube-context ${context}` +
-    ` --install ${deployment} ` +
-    chartLocation +
-    ` --namespace ${namespace} ` +
-    ` --set deploy.image.tag=${imageTag} `
-  );
+    ` --install ${deployment}` +
+    ' ' + chartLocation +
+    ` --namespace ${namespace}` +
+    ` --set deploy.image.tag=${imageTag}`;
 }
 
 module.exports = {
   buildDockerImage,
   pushDockerImageInHarbor,
-  deployInKubernetes,
+  getKubernetesDeploymentCommand,
   switchContext
 };
