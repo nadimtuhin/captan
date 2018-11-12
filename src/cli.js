@@ -1,6 +1,7 @@
 #!/usr/bin/env node --harmony
 
 const colors = require('colors');
+const exec = require('../lib/utils/shell').exec;
 const argv = require('yargs').argv;
 
 const getValues = require('./utils/getValues').getValues;
@@ -9,7 +10,7 @@ const { getHelmCharts } = require('./utils/helm');
 const {
   buildDockerImage,
   pushDockerImageInHarbor,
-  deployInKubernetes
+  getKubernetesDeploymentCommand
 } = require('./commands');
 const {
   getBuildArgs,
@@ -18,7 +19,8 @@ const {
   getNamespace,
   getDeployment,
   getRemoteImageTag,
-  getTasks
+  getTasks,
+  confirmDeploy
 } = require('./questions');
 
 async function main() {
@@ -59,6 +61,7 @@ async function main() {
   const remoteImageUrl = `${imageRepoUrl}:${imageTag}`;
 
   if (tasks.includes('build-image')) {
+    console.log(colors.yellow('-----------------------------------------'));
     console.log(colors.green(`Building docker image ${localImageName} ..`));
     buildDockerImage(dockerFile, localImageName, buildArgs);
 
@@ -67,14 +70,26 @@ async function main() {
   }
 
   if (tasks.includes('deploy')) {
-    console.log(colors.green(`Deploying ${deployment} (${remoteImageUrl}) in ${context}|${namespace} from ${chartLocation}`));
-    deployInKubernetes({
+    const command = getKubernetesDeploymentCommand({
       context,
       deployment,
       chartLocation,
       namespace,
       imageTag
     });
+
+    console.log(colors.yellow('-----------------------------------------'));
+    console.log(colors.red('The following command will be ran to deploy'));
+    console.log(colors.white(`$ ${command}`));
+
+    try {
+      const deploy = await confirmDeploy();
+      if(deploy !== 'deploy') throw Error("Deployment cancelled");
+      colors.green(`Deploying ${deployment} (${remoteImageUrl}) in ${context}|${namespace} from ${chartLocation}`);
+      exec(command);
+    } catch (e) {
+      console.log(colors.red(e));
+    }
   }
 }
 

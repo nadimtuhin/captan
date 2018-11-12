@@ -55,12 +55,20 @@ async function getRemoteImageTag() {
   });
 }
 
+async function confirmDeploy() {
+  return await ask({
+    type: 'input',
+    message: 'Write "deploy" to initiate deployment'
+  });
+}
+
 module.exports = {
   getHelmChartLocation,
   getTasks,
   selectKubernetesContext,
   getNamespace,
   getDeployment,
-  getBuildArgs: getBuildArgs,
-  getRemoteImageTag
+  getBuildArgs,
+  getRemoteImageTag,
+  confirmDeploy
 };
