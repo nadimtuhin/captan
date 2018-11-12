@@ -1,18 +1,38 @@
+const isArray = require('lodash/isArray');
 const { readValuesFile } = require('../../lib/utils/helm');
 const { getContexts } = require('../../lib/utils/kubernetes');
 
 function getValues(chartLocation) {
   const defaultValues = {
     dockerFile: './DockerFile',
-    environments: [],
-    deployments: [],
-    namespaces: [],
+    buildArgs: [],
     contexts: getContexts().map(c => c.name)
   };
 
-  const values = readValuesFile(chartLocation);
+  let values = readValuesFile(chartLocation);
+  values = Object.assign({}, defaultValues, values);
 
-  return Object.assign({}, defaultValues, values);
+  if(!values.appName) {
+    throw Error('appName is required in values.appName');
+  }
+
+  if(!values.deployments) {
+    throw Error('deployment names is required in values.deployments');
+  }
+
+  if(!isArray(values.deployments)) {
+    throw Error('values.deployments has to be an array of strings');
+  }
+
+  if(!values.namespaces) {
+    throw Error('namespaces is required in values.namespaces');
+  }
+
+  if(!isArray(values.namespaces)) {
+    throw Error('values.namespaces has to be an array of strings');
+  }
+
+  return values;
 }
 
 module.exports = {
