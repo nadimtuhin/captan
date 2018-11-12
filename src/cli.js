@@ -25,9 +25,16 @@ const {
 
 async function main() {
   const chartLocation = await getHelmChartLocation(getHelmCharts());
-  const tasks = await getTasks();
 
-  const values = getValues(chartLocation);
+  let values;
+  try {
+    values = getValues(chartLocation);
+  } catch(e) {
+    console.log(colors.red(e));
+    process.exit(1);
+  }
+
+  const tasks = await getTasks();
 
   let namespaces, namespace, deployment, context;
   if (tasks.includes('deploy')) {

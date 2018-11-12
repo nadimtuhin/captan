@@ -1,4 +1,3 @@
-const confirmDeploy = require('./questions').confirmDeploy;
 const { exec } = require('./utils/shell');
 
 function switchContext(context) {
@@ -6,7 +5,10 @@ function switchContext(context) {
 }
 
 function buildDockerImage(dockerFile, localImageName, buildArgs) {
-  exec(`docker build . -f ${dockerFile} --build-arg ${buildArgs} -t ${localImageName}`);
+  let command = `docker build . -f ${dockerFile} -t ${localImageName}`;
+  if (buildArgs) command += ` --build-arg ${buildArgs}`;
+
+  exec(command);
 }
 
 function pushDockerImageInHarbor(localImageName, remoteImageUrl) {
