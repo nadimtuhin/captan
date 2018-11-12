@@ -1,6 +1,6 @@
 const isArray = require('lodash/isArray');
-const { readValuesFile } = require('../../lib/utils/helm');
-const { getContexts } = require('../../lib/utils/kubernetes');
+const { readValuesFile } = require('./helm');
+const { getContexts } = require('./kubernetes');
 
 function getValues(chartLocation) {
   const defaultValues = {
