@@ -1,4 +1,5 @@
 const shell = require('shelljs');
+// const shell = { exec: () => ({ code: 1}), exit: () => {} };
 const colors = require('colors');
 
 function exec(command) {

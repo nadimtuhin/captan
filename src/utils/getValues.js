@@ -4,7 +4,7 @@ const { getContexts } = require('./kubernetes');
 
 function getValues(chartLocation) {
   const defaultValues = {
-    dockerFile: './DockerFile',
+    dockerFile: './Dockerfile',
     buildArgs: [],
     contexts: getContexts().map(c => c.name)
   };
