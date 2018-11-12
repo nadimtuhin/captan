@@ -13,10 +13,11 @@ function pushDockerImageInHarbor(localImageName, remoteImageUrl) {
   exec(`docker push ${remoteImageUrl}`);
 }
 
-function deployInKubernetes(appName, chartLocation, namespace, imageTag) {
+function deployInKubernetes({ context, deployment, chartLocation, namespace, imageTag }) {
   exec(
     'helm upgrade' +
-    ` --install ${appName} ` +
+    ` --kube-context ${context}` +
+    ` --install ${deployment} ` +
     chartLocation +
     ` --namespace ${namespace} ` +
     ` --set deploy.image.tag=${imageTag} `
