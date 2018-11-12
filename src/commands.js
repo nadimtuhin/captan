@@ -4,8 +4,8 @@ function switchContext(context) {
   exec(`kubectl config use-context ${context}`);
 }
 
-function buildDockerImage(dockerFile, localImageName, environment) {
-  exec(`docker build . -f ${dockerFile} --build-arg NODE_ENV=${environment} -t ${localImageName}`);
+function buildDockerImage(dockerFile, localImageName, buildArgs) {
+  exec(`docker build . -f ${dockerFile} --build-arg ${buildArgs} -t ${localImageName}`);
 }
 
 function pushDockerImageInHarbor(localImageName, remoteImageUrl) {
