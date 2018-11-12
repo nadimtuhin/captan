@@ -10,11 +10,16 @@ function getContexts() {
   return kc.getContexts();
 }
 
+function setContext(context) {
+  return kc.setContext(context);
+}
+
 function getCurrentContextObject() {
   return kc.getCurrentContextObject();
 }
 
 function getNamespaces() {
+  setContext(context);
   return k8sApi.listNamespace()
     .then((res, err) => {
       if (err) throw Error(err);
@@ -25,6 +30,7 @@ function getNamespaces() {
 
 module.exports = {
   getContexts,
+  setContext,
   getCurrentContextObject,
   getNamespaces
 };
