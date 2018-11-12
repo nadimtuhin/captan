@@ -12,7 +12,7 @@ const {
   deployInKubernetes
 } = require('./commands');
 const {
-  getBuildEnvironment,
+  getBuildArgs,
   getHelmChartLocation,
   selectKubernetesContext,
   getNamespace,
@@ -30,7 +30,6 @@ async function main() {
   let namespaces, namespace, deployment, context;
   if (tasks.includes('deploy')) {
     context = await selectKubernetesContext(values.contexts);
-    console.log(colors.green(`Switching to ${context} context`));
 
     try {
       namespaces = await getNamespaces(context);
@@ -42,28 +41,26 @@ async function main() {
     deployment = await getDeployment(values.deployments);
   }
 
-  let environment;
-  if (tasks.includes('build-image')) {
-    environment = await getBuildEnvironment(values);
+  let buildArgs;
+  if (values.buildArgs.length && tasks.includes('build-image')) {
+    buildArgs = await getBuildArgs(values.buildArgs);
   }
 
-  let tag;
+  let imageTag;
   if (tasks.length) {
-    tag = await getRemoteImageTag();
+    imageTag = await getRemoteImageTag();
   }
 
   const appName = values.appName;
   const dockerFile = values.dockerFile;
   const imageRepoUrl = values.deploy.image.repo;
 
-  const imageTag = `${tag}-${environment}`;
-
-  const localImageName = `${appName}/${environment}:live`;
+  const localImageName = `${appName}:live`;
   const remoteImageUrl = `${imageRepoUrl}:${imageTag}`;
 
   if (tasks.includes('build-image')) {
     console.log(colors.green(`Building docker image ${localImageName} ..`));
-    buildDockerImage(dockerFile, localImageName, environment);
+    buildDockerImage(dockerFile, localImageName, buildArgs);
 
     console.log(colors.green(`Pushing docker image ${remoteImageUrl} ..`));
     pushDockerImageInHarbor(localImageName, remoteImageUrl);

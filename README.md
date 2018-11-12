@@ -12,7 +12,7 @@ captan
     --chart ./hack/app
     --build
     --appname dashboard 
-    --environment development
+    --build-args NODE_ENV=development
     --deploy
     --deployment dashboard-deployment
     --namespace dashboard-staging

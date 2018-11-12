@@ -40,11 +40,11 @@ async function getDeployment(deployments) {
   });
 }
 
-async function getBuildEnvironment(values) {
+async function getBuildArgs(buildArgs) {
   return await ask({
     type: 'list',
-    message: 'What is the environment?',
-    choices: values.environments //FIXME: validate
+    message: 'Select docker build args?',
+    choices: buildArgs //FIXME: validate
   });
 }
 
@@ -61,6 +61,6 @@ module.exports = {
   selectKubernetesContext,
   getNamespace,
   getDeployment,
-  getBuildEnvironment,
+  getBuildArgs: getBuildArgs,
   getRemoteImageTag
 };
