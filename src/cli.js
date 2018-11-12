@@ -1,7 +1,7 @@
 #!/usr/bin/env node --harmony
 
 const colors = require('colors');
-const exec = require('../lib/utils/shell').exec;
+const exec = require('./utils/shell').exec;
 const argv = require('yargs').argv;
 
 const getValues = require('./utils/getValues').getValues;
