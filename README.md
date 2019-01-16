@@ -22,7 +22,8 @@ captan
 
 ## Usage guide
 
-```values.yaml
+```yaml
+# hack/app-helm-chart/values.yaml
 appName: dashboard
 
 deployments:
