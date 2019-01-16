@@ -1,11 +1,13 @@
 # captan
+
 kubernetes deployment helper
 
 
 ## features
-[x] supports deploying to multiple namespaces and clusters
-[x] supports multiple deployments
-[ ] add support for inline arguments, for example
+
+- [x] supports deploying to multiple namespaces and clusters
+- [x] supports multiple deployments
+- [ ] add support for inline arguments, for example
 ```sh
 
 captan 
