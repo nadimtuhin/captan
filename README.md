@@ -6,7 +6,7 @@ kubernetes deployment helper
 - supports deploying to multiple namespaces and clusters
 - supports deploying to multiple deployments
 
-``sh
+```sh
 
 captan 
     --chart ./hack/app
@@ -18,7 +18,7 @@ captan
     --namespace dashboard-staging
     --cluster dashboard-prod
     
-``
+```
 
 ## Usage guide
 
