@@ -1,14 +1,24 @@
 const { exec } = require('./utils/shell');
 
 function switchContext(context) {
-  exec(`kubectl config use-context ${context}`);
+  return exec(`kubectl config use-context ${context}`);
 }
+
+// function getCurrentGitBranch() {
+//   // FIXME: add error handler if git branch not found
+//   const res = exec('git symbolic-ref --short HEAD');
+
+//   return res.stdout.trim();
+// }
 
 function buildDockerImage(dockerFile, localImageName, buildArgs) {
   let command = `docker build . -f ${dockerFile} -t ${localImageName}`;
-  if (buildArgs) command += ` --build-arg ${buildArgs}`;
+  let branch = getCurrentGitBranch();
 
-  exec(command);
+  if (buildArgs) command += ` --build-arg ${buildArgs}`;
+  // if (branch) command += ` --build-arg GIT_BRACH=${branch}`;
+
+  return exec(command);
 }
 
 function pushDockerImageInHarbor(localImageName, remoteImageUrl) {
