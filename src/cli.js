@@ -92,7 +92,8 @@ async function main() {
     try {
       const deploy = await confirmDeploy();
       if(deploy !== 'deploy') throw Error("Deployment cancelled");
-      colors.green(`Deploying ${deployment} (${remoteImageUrl}) in ${context}|${namespace} from ${chartLocation}`);
+      const message = `Deploying ${deployment} (${remoteImageUrl}) in ${context}|${namespace} from ${chartLocation}`;
+      console.log(colors.green(message));
       exec(command);
     } catch (e) {
       console.log(colors.red(e));
@@ -100,5 +101,10 @@ async function main() {
   }
 }
 
+if(require('./utils/git').isDirty()) {
+  const message = 'there are uncommited files in repository please commit before proceeding';
+  console.log(colors.red(message));
+  throw new Error(message);
+}
 
 main();
