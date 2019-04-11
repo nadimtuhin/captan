@@ -2,9 +2,9 @@ const shell = require('shelljs');
 // const shell = { exec: () => ({ code: 1}), exit: () => {} };
 const colors = require('colors');
 
-function exec(command) {
+function exec(command, silent=false) {
   // console.log(colors.green(startMessage));
-  console.log(colors.yellow(`running command: ${command}`));
+  !silent && console.log(colors.yellow(`running command: ${command}`));
 
   const result = shell.exec(command);
   if (result.code !== 0) {
@@ -16,6 +16,11 @@ function exec(command) {
   return result;
 }
 
+function execSilent(command) {
+  return exec(command, true);
+}
+
 module.exports = {
-  exec
+  exec,
+  execSilent
 };

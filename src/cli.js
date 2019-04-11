@@ -101,10 +101,12 @@ async function main() {
   }
 }
 
-if(require('./utils/git').isDirty()) {
-  const message = 'there are uncommited files in repository please commit before proceeding';
-  console.log(colors.red(message));
-  process.exit(1);
+function exitIfCurrentWorkingTreeIsDirty() {
+  if(require('./utils/git').isDirty()) {
+    console.log(colors.red('there are uncommited files in repository please commit before proceeding'));
+    process.exit(1);
+  }
 }
 
+exitIfCurrentWorkingTreeIsDirty();
 main();
