@@ -104,7 +104,7 @@ async function main() {
 if(require('./utils/git').isDirty()) {
   const message = 'there are uncommited files in repository please commit before proceeding';
   console.log(colors.red(message));
-  throw new Error(message);
+  process.exit(1);
 }
 
 main();
