@@ -63,3 +63,6 @@ typings/
 /.idea
 /lib
 /examples
+.DS_Store
+dist
+build

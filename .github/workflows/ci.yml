@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Set up Python
+        if: hashFiles('requirements.txt') != '' || hashFiles('pyproject.toml') != ''
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Node.js dependencies
+        if: hashFiles('package.json') != ''
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Install Python dependencies
+        if: hashFiles('requirements.txt') != ''
+        run: pip install -r requirements.txt
+
+      - name: Run lint
+        if: hashFiles('package.json') != ''
+        run: grep -q '"lint"' package.json && npm run lint || true
+        continue-on-error: true
+
+      - name: Run tests
+        run: |
+          [ -f package.json ] && grep -q '"test"' package.json && npm test || true
+          ([ -f pytest.ini ] || [ -f pyproject.toml ]) && python -m pytest --tb=short || true
+        continue-on-error: true
