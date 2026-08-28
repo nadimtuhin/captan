@@ -18,7 +18,7 @@ function getCurrentContextObject() {
   return kc.getCurrentContextObject();
 }
 
-function getNamespaces() {
+function getNamespaces(context) {
   setContext(context);
   return k8sApi.listNamespace()
     .then((res, err) => {
