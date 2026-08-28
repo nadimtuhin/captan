@@ -92,7 +92,7 @@ async function main() {
     try {
       const deploy = await confirmDeploy();
       if(deploy !== 'deploy') throw Error("Deployment cancelled");
-      colors.green(`Deploying ${deployment} (${remoteImageUrl}) in ${context}|${namespace} from ${chartLocation}`);
+      console.log(colors.green(`Deploying ${deployment} (${remoteImageUrl}) in ${context}|${namespace} from ${chartLocation}`));
       exec(command);
     } catch (e) {
       console.log(colors.red(e));
