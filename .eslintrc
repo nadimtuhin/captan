@@ -3,6 +3,9 @@
 		"node": true,
 		"es6": true
   },
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
   "rules": {
 	"indent": ["error", 2, { "SwitchCase": 1 }],
 	"quotes": ["error", "single"],
