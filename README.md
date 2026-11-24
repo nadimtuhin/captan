@@ -43,4 +43,9 @@ buildArgs:
   - NODE_ENV=production
 
 dockerFile: ./Dockerfile
+
+# image is pushed here, and deployed with --set deploy.image.tag=<tag>
+deploy:
+  image:
+    repo: registry.example.com/dashboard
 ```

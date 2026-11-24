@@ -1,3 +1,4 @@
+const get = require('lodash/get');
 const isArray = require('lodash/isArray');
 const { readValuesFile } = require('./helm');
 const { getContexts } = require('./kubernetes');
@@ -30,6 +31,10 @@ function getValues(chartLocation) {
 
   if(!isArray(values.namespaces)) {
     throw Error('values.namespaces has to be an array of strings');
+  }
+
+  if(!get(values, 'deploy.image.repo')) {
+    throw Error('image repository is required in values.deploy.image.repo');
   }
 
   return values;
