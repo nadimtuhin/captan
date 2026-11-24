@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 
 const colors = require('colors');
 const exec = require('./utils/shell').exec;
