@@ -3,15 +3,12 @@ const k8s = require('@kubernetes/client-node');
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
 
-const k8sApi = kc.makeApiClient(k8s.Core_v1Api);
-
-
 function getContexts() {
   return kc.getContexts();
 }
 
 function setContext(context) {
-  return kc.setContext(context);
+  return kc.setCurrentContext(context);
 }
 
 function getCurrentContextObject() {
@@ -20,6 +17,7 @@ function getCurrentContextObject() {
 
 function getNamespaces(context) {
   setContext(context);
+  const k8sApi = kc.makeApiClient(k8s.Core_v1Api);
   return k8sApi.listNamespace()
     .then((res, err) => {
       if (err) throw Error(err);
