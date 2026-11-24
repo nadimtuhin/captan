@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 
 const colors = require('colors');
 const exec = require('./utils/shell').exec;
@@ -91,7 +91,7 @@ async function main() {
 
     try {
       const deploy = await confirmDeploy();
-      if(deploy !== 'deploy') throw Error("Deployment cancelled");
+      if(deploy !== 'deploy') throw Error('Deployment cancelled');
       console.log(colors.green(`Deploying ${deployment} (${remoteImageUrl}) in ${context}|${namespace} from ${chartLocation}`));
       exec(command);
     } catch (e) {
